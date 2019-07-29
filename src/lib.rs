@@ -34,10 +34,11 @@ impl Rusteam {
         let iter = Self::games_iter(root);
         if let Some(pattern) = pattern {
             iter.filter(|game: &Game| {
-                game.clone() // HACK: I hate seeing clone
-                    .name
+                game.name
+                    .clone()
                     .map_or(false, |name| Self::matches(&name, &pattern))
                 // REVIEW: is contains enough for now?
+                // Yes it is.
             })
             .collect::<Vec<Game>>()
         } else {
