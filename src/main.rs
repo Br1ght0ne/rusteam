@@ -69,13 +69,13 @@ mod cli {
     pub enum Command {
         #[structopt(name = "ls", about = "List your games")]
         List {
-            #[structopt(help = "substring of game name")]
-            pattern: Option<String>,
+            #[structopt(help = "substrings of game name")]
+            patterns: Vec<String>,
         },
         #[structopt(name = "play", about = "Run a game")]
         Play {
-            #[structopt(help = "substring of game name")]
-            pattern: String,
+            #[structopt(help = "substrings of game name")]
+            patterns: Vec<String>,
         },
         #[structopt(name = "config", about = "Manage your configuration")]
         Config(Config),
@@ -87,6 +87,10 @@ mod cli {
         Init,
         #[structopt(name = "show", about = "Display your current configuration")]
         Show,
+    }
+
+    fn vec_to_string(vec: Vec<String>) -> String {
+        vec.join(" ")
     }
 }
 
@@ -135,13 +139,13 @@ fn cli() -> Result<()> {
                 .context(GamesRootNotDefined)
                 .unwrap();
             match cmd {
-                Command::List { pattern } => {
-                    let games = Rusteam::list_games(&games_root, pattern);
+                Command::List { patterns } => {
+                    let games = Rusteam::list_games(&games_root, patterns.join(" "));
                     for game in games.iter() {
                         println!("{}", game);
                     }
                 }
-                Command::Play { pattern } => Rusteam::play_game(&games_root, pattern),
+                Command::Play { patterns } => Rusteam::play_game(&games_root, patterns.join(" ")),
                 Command::Config(cmd) => match cmd {
                     cli::Config::Init => unreachable!(),
                     cli::Config::Show => show_config(&config),

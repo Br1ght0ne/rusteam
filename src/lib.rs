@@ -11,12 +11,12 @@ pub struct Rusteam;
 impl Rusteam {
     const IGNORE_FILENAME: &'static str = ".rusteam-ignore";
 
-    pub fn list_games(root: &Path, pattern: Option<String>) -> Vec<Game> {
+    pub fn list_games(root: &Path, pattern: String) -> Vec<Game> {
         Self::find_games(root, pattern)
     }
 
     pub fn play_game(root: &Path, pattern: String) {
-        if let Some(game) = Self::find_games(root, Some(pattern)).first() {
+        if let Some(game) = Self::find_games(root, pattern).first() {
             if let Some(launcher) = game.launchers.first() {
                 let command = Command::new(dbg!(launcher))
                     .current_dir(&game.directory)
@@ -30,20 +30,16 @@ impl Rusteam {
         }
     }
 
-    fn find_games(root: &Path, pattern: Option<String>) -> Vec<Game> {
+    fn find_games(root: &Path, pattern: String) -> Vec<Game> {
         let iter = Self::games_iter(root);
-        if let Some(pattern) = pattern {
-            iter.filter(|game: &Game| {
-                game.name
-                    .clone()
-                    .map_or(false, |name| Self::matches(&name, &pattern))
-                // REVIEW: is contains enough for now?
-                // Yes it is.
-            })
-            .collect::<Vec<Game>>()
-        } else {
-            iter.collect::<Vec<Game>>()
-        }
+        iter.filter(|game: &Game| {
+            game.name
+                .clone()
+                .map_or(false, |name| Self::matches(&name, &pattern))
+            // REVIEW: is contains enough for now?
+            // Yes it is.
+        })
+        .collect::<Vec<Game>>()
     }
 
     fn games_iter(root: &Path) -> impl Iterator<Item = Game> + '_ {
