@@ -88,10 +88,6 @@ mod cli {
         #[structopt(name = "show", about = "Display your current configuration")]
         Show,
     }
-
-    fn vec_to_string(vec: Vec<String>) -> String {
-        vec.join(" ")
-    }
 }
 
 fn fetch_config(config_path: &Path) -> Result<Config> {

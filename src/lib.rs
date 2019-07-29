@@ -36,8 +36,7 @@ impl Rusteam {
             game.name
                 .clone()
                 .map_or(false, |name| Self::matches(&name, &pattern))
-            // REVIEW: is contains enough for now?
-            // Yes it is.
+            // REVIEW: is contains enough for now? Yes it is.
         })
         .collect::<Vec<Game>>()
     }
