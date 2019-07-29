@@ -5,6 +5,7 @@ extern crate structopt;
 
 use crate::structopt::StructOpt;
 use rusteam::Rusteam;
+use std::io::Write;
 
 use colored::*;
 use serde::{Deserialize, Serialize};
@@ -19,12 +20,12 @@ type Result<T, E = Error> = std::result::Result<T, E>;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
-    #[snafu(display("could not open config from {}: {}", config_path.display(), source))]
+    #[snafu(display("could not open config at {}: {}", config_path.display(), source))]
     OpenConfig {
         config_path: PathBuf,
         source: std::io::Error,
     },
-    #[snafu(display("could not parse config from {}: {}", config_path.display(), source))]
+    #[snafu(display("could not parse config at {}: {}", config_path.display(), source))]
     ParseConfig {
         config_path: PathBuf,
         source: toml::de::Error,
@@ -40,26 +41,18 @@ pub enum Error {
     NoConfigDir,
 }
 
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
 struct Config {
     #[serde(default = "GamesRoot::default")]
     games_root: GamesRoot,
-    #[serde(default = "Config::default_wait_for_game_process")]
-    wait_for_game_process: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 struct GamesRoot(Option<PathBuf>);
 
 impl Default for GamesRoot {
     fn default() -> Self {
-        GamesRoot(dirs::home_dir().map(|home| home.join("Games")))
-    }
-}
-
-impl Config {
-    fn default_wait_for_game_process() -> bool {
-        true
+        Self(dirs::home_dir().map(|home| home.join("Games")))
     }
 }
 
@@ -90,8 +83,10 @@ mod cli {
 
     #[derive(StructOpt)]
     pub enum Config {
-        #[structopt(name = "create", about = "Create a default configuration file")]
-        Create,
+        #[structopt(name = "init", about = "Initialize a default configuration file")]
+        Init,
+        #[structopt(name = "show", about = "Display your current configuration")]
+        Show,
     }
 }
 
@@ -111,6 +106,12 @@ fn write_config(config: &Config, config_path: &Path) -> Result<()> {
     Ok(())
 }
 
+fn show_config(config: &Config) {
+    std::io::stdout()
+        .write(&toml::to_vec(config).expect("can't pretty config"))
+        .expect("failed writing to stdout");
+}
+
 fn config_path() -> Result<PathBuf> {
     dirs::config_dir()
         .context(NoConfigDir)
@@ -124,16 +125,15 @@ fn cli() -> Result<()> {
     let config_path = config_path()?;
 
     match cli.cmd {
-        Command::Config(cmd) => match cmd {
-            cli::Config::Create => write_config(&Config::default(), &config_path)?,
-        },
+        Command::Config(cli::Config::Init) => write_config(&Config::default(), &config_path)?,
         cmd => {
             let config = fetch_config(&config_path)?;
-            let Config {
-                games_root,
-                wait_for_game_process,
-            } = config;
-            let games_root = &games_root.0.context(GamesRootNotDefined).unwrap();
+            let games_root = &config
+                .clone()
+                .games_root
+                .0
+                .context(GamesRootNotDefined)
+                .unwrap();
             match cmd {
                 Command::List { pattern } => {
                     let games = Rusteam::list_games(&games_root, pattern);
@@ -141,10 +141,11 @@ fn cli() -> Result<()> {
                         println!("{}", game);
                     }
                 }
-                Command::Play { pattern } => {
-                    Rusteam::play_game(&games_root, pattern, wait_for_game_process)
-                }
-                Command::Config(_) => unreachable!(),
+                Command::Play { pattern } => Rusteam::play_game(&games_root, pattern),
+                Command::Config(cmd) => match cmd {
+                    cli::Config::Init => unreachable!(),
+                    cli::Config::Show => show_config(&config),
+                },
             }
         }
     }
@@ -154,7 +155,17 @@ fn cli() -> Result<()> {
 
 fn main() {
     if let Err(e) = cli() {
-        eprintln!("{} {}", "An error occured:".red(), e);
+        eprintln!("{}\n{}", "An error occured:".red(), e);
+        match &e {
+            Error::OpenConfig {
+                config_path,
+                source: _,
+            } => eprintln!(
+                "Please run `rusteam config init` to get the default configuration at {}",
+                format!("{}", config_path.display()).green()
+            ),
+            _ => (),
+        }
         if let Some(backtrace) = ErrorCompat::backtrace(&e) {
             println!("{}", backtrace);
         }

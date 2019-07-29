@@ -15,16 +15,14 @@ impl Rusteam {
         Self::find_games(root, pattern)
     }
 
-    pub fn play_game(root: &Path, pattern: String, wait: bool) {
+    pub fn play_game(root: &Path, pattern: String) {
         if let Some(game) = Self::find_games(root, Some(pattern)).first() {
             if let Some(launcher) = game.launchers.first() {
                 let command = Command::new(dbg!(launcher))
                     .current_dir(&game.directory)
                     .spawn();
                 if let Ok(mut child) = command {
-                    if wait {
-                        child.wait().expect("game wasn't running");
-                    }
+                    child.wait().expect("game wasn't running");
                 } else {
                     panic!("{} didn't start", game)
                 }
