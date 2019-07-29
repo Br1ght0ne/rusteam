@@ -15,10 +15,9 @@ impl Rusteam {
         Self::find_games(root, pattern)
     }
 
-    pub fn play_game(root: &Path, pattern: String) {
+    pub fn play_game(root: &Path, pattern: String, wait: bool) {
         if let Some(game) = Self::find_games(root, Some(pattern)).first() {
             if let Some(launcher) = game.launchers.first() {
-                let wait = true; // TODO
                 let command = Command::new(dbg!(launcher))
                     .current_dir(&game.directory)
                     .spawn();
