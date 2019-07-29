@@ -1,0 +1,10 @@
+[package]
+authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
+name = "rusteam"
+description = "Manage your games on the terminal"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+structopt = "0.2"
+dirs = "2.0.2"
