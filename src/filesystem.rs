@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+/// Gets a Vec of absolute entry paths in a directory.
 pub fn entries(directory: &Path) -> Vec<PathBuf> {
     directory
         .read_dir()
@@ -10,26 +11,25 @@ pub fn entries(directory: &Path) -> Vec<PathBuf> {
         .collect::<Vec<PathBuf>>()
 }
 
+/// Checks if the last two components of the `filepath` are equal.
+///
+/// # Caveats
+///
+/// Is automatically `false` when:
+///
+/// - there is no parent directory
+///
+/// # Examples
+///
+/// ```
+/// # use rusteam::filesystem::has_same_name_as_parent_dir;
+/// # use std::path::PathBuf;
+/// let path = PathBuf::from("/path/to/entry/entry");
+/// assert!(has_same_name_as_parent_dir(&path))
+/// ```
 pub fn has_same_name_as_parent_dir(filepath: &Path) -> bool {
-    if let Some(parent_dir) = filepath.parent() {
+    filepath.parent().map_or(false, |parent_dir| {
         let parent_file_name = parent_dir.file_name();
-
-        parent_file_name
-            .and(filepath.file_name())
-            .map_or(false, |filename| filename == parent_file_name.unwrap())
-    } else {
-        false
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_has_name_name_as_parent_dir() {
-        assert!(has_same_name_as_parent_dir(&PathBuf::from(
-            "/path/to/Something/Something"
-        )))
-    }
+        parent_file_name.and(filepath.file_name()) == parent_file_name
+    })
 }

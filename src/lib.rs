@@ -3,7 +3,7 @@ use crate::game::Game;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-mod filesystem;
+pub mod filesystem;
 mod game;
 
 pub struct Rusteam;
