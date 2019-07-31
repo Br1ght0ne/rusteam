@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 
 pub mod filesystem;
-mod game;
+pub mod game;
 
 pub struct Rusteam;
 
