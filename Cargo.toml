@@ -2,7 +2,7 @@
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 name = "rusteam"
 description = "Manage your games on the terminal"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2018"
 
 [dependencies]
