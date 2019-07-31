@@ -3,18 +3,16 @@ extern crate serde;
 extern crate snafu;
 extern crate structopt;
 
-use rusteam::{game::Game, Rusteam};
-use std::io::Write;
-use structopt::StructOpt;
-
 use colored::*;
 use serde::{Deserialize, Serialize};
 use snafu::ResultExt;
-
-use std::fs;
-use std::path::PathBuf;
-
 use snafu::{ErrorCompat, OptionExt, Snafu};
+use std::fs;
+use std::io::Write;
+use std::path::PathBuf;
+use structopt::StructOpt;
+
+use rusteam::game::Game;
 
 type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -170,10 +168,10 @@ fn cli() -> Result<()> {
 
             match cmd {
                 Command::List { patterns } => {
-                    let games = Rusteam::list_games(&games_root, patterns.join(" "));
+                    let games = rusteam::list_games(&games_root, patterns.join(" "));
                     print_games(&games);
                 }
-                Command::Play { patterns } => Rusteam::play_game(&games_root, patterns.join(" ")),
+                Command::Play { patterns } => rusteam::play_game(&games_root, patterns.join(" ")),
                 Command::Config(config_action) => match config_action {
                     cli::Config::Init => Config::init()?,
                     cli::Config::Show => config.show()?,
