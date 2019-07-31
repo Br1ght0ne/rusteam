@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use snafu::ResultExt;
 
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use snafu::{ErrorCompat, OptionExt, Snafu};
 
@@ -35,6 +35,12 @@ pub enum Error {
     // TODO: what something?
     #[snafu(display("could not serialize something to TOML: {}", source))]
     TomlSerialization { source: toml::ser::Error },
+
+    #[snafu(display("failed to create config directory at {}: {}", path.display(), source))]
+    CreateConfigDir {
+        path: PathBuf,
+        source: std::io::Error,
+    },
 
     #[snafu(display("could not write config to {}: {}", path.display(), source))]
     WriteConfig {
@@ -106,17 +112,20 @@ impl Config {
     const CONFIG_SUBDIR: &'static str = env!("CARGO_PKG_NAME");
     const CONFIG_FILENAME: &'static str = "config.toml";
 
-    fn path() -> Result<PathBuf> {
+    fn directory() -> Result<PathBuf> {
         let config_home = dirs::config_dir().context(NoConfigDir)?;
-        Ok(config_home
-            .join(Self::CONFIG_SUBDIR)
-            .join(Self::CONFIG_FILENAME))
+        Ok(config_home.join(Self::CONFIG_SUBDIR))
     }
 
-    fn fetch(path: &Path) -> Result<Self> {
-        let file = &fs::read(&path).context(OpenConfig { path })?;
+    fn path() -> Result<PathBuf> {
+        Ok(Self::directory()?.join(Self::CONFIG_FILENAME))
+    }
+
+    fn fetch() -> Result<Self> {
+        let path = Self::path()?;
+        let file = &fs::read(&path).context(OpenConfig { path: path.clone() })?;
         let config = String::from_utf8_lossy(file);
-        let toml = toml::from_str(&config).context(ParseConfig { path })?;
+        let toml = toml::from_str(&config).context(ParseConfig { path: path.clone() })?;
         Ok(toml)
     }
 
@@ -128,9 +137,23 @@ impl Config {
         Ok(())
     }
 
-    fn write(&self, path: &Path) -> Result<()> {
+    fn init() -> Result<()> {
+        Self::ensure_directory()?;
+        Self::default().write()
+    }
+
+    /// Ensures the package config directory is present.
+    /// **Does** create `~/.config` if needed.
+    fn ensure_directory() -> Result<()> {
+        let path = Self::directory()?;
+        fs::create_dir_all(&path).context(CreateConfigDir { path })?;
+        Ok(())
+    }
+
+    fn write(&self) -> Result<()> {
         let toml = toml::to_string_pretty(&self).context(TomlSerialization)?;
-        fs::write(path, &toml).context(WriteConfig { path })?;
+        let path = Self::path()?;
+        fs::write(&path, &toml).context(WriteConfig { path })?;
         Ok(())
     }
 }
@@ -139,11 +162,10 @@ use cli::{Command, CLI};
 
 fn cli() -> Result<()> {
     let cli = CLI::from_args();
-    let config_path = Config::path()?;
 
     match cli.cmd {
         cmd => {
-            let config = Config::fetch(&config_path).unwrap_or_default();
+            let config = Config::fetch().unwrap_or_default();
             let games_root = &config.games_root.0;
 
             match cmd {
@@ -153,7 +175,7 @@ fn cli() -> Result<()> {
                 }
                 Command::Play { patterns } => Rusteam::play_game(&games_root, patterns.join(" ")),
                 Command::Config(config_action) => match config_action {
-                    cli::Config::Init => config.write(&config_path)?,
+                    cli::Config::Init => Config::init()?,
                     cli::Config::Show => config.show()?,
                 },
             }
