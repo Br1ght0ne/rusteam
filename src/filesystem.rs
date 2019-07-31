@@ -1,6 +1,15 @@
 use std::path::{Path, PathBuf};
 
 /// Gets a Vec of absolute entry paths in a directory.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use rusteam::filesystem::entries;
+/// # use std::path::PathBuf;
+/// let path = PathBuf::from("/nix");
+/// assert_eq!(2, entries(&path).len())
+/// ```
 pub fn entries(directory: &Path) -> Vec<PathBuf> {
     directory
         .read_dir()

@@ -108,7 +108,7 @@ fn write_config(config: &Config, config_path: &Path) -> Result<()> {
 
 fn show_config(config: &Config) {
     std::io::stdout()
-        .write(&toml::to_vec(config).expect("can't pretty config"))
+        .write_all(&toml::to_vec(config).expect("can't pretty config"))
         .expect("failed writing to stdout");
 }
 
@@ -157,14 +157,11 @@ fn main() {
     if let Err(e) = cli() {
         eprintln!("{}\n{}", "An error occured:".red(), e);
         match &e {
-            Error::OpenConfig {
-                config_path,
-                source: _,
-            } => eprintln!(
+            Error::OpenConfig { config_path, .. } => eprintln!(
                 "Please run `rusteam config init` to get the default configuration at {}",
                 format!("{}", config_path.display()).green()
             ),
-            _ => (),
+            _ => unimplemented!(),
         }
         if let Some(backtrace) = ErrorCompat::backtrace(&e) {
             println!("{}", backtrace);
