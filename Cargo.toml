@@ -2,9 +2,9 @@
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 name = "rusteam"
 description = "Manage your games on the terminal"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2018"
-license = "GPL-3"
+license = "GPL-3.0-or-later"
 homepage = "https://github.com/filalex77/rusteam"
 repository = "https://github.com/filalex77/rusteam"
 
