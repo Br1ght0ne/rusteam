@@ -6,7 +6,7 @@ use std::process::Command;
 pub mod filesystem;
 pub mod game;
 
-const IGNORE_FILENAME: &'static str = ".rusteam-ignore";
+const IGNORE_FILENAME: &str = ".rusteam-ignore";
 
 pub fn play_game(root: &Path, pattern: String) {
     if let Some(game) = list_games(root, pattern).first() {
