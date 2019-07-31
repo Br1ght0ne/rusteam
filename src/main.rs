@@ -172,16 +172,20 @@ fn print_games(games: &[Game]) {
     }
 }
 
+/// Prints possible suggestions for common errors.
+fn print_suggestions(error: &Error) {
+    if let Error::OpenConfig { path, .. } = error {
+        eprintln!(
+            "Please run `rusteam config init` to get the default configuration at {}",
+            format!("{}", path.display()).green()
+        );
+    }
+}
+
 fn main() {
     if let Err(e) = cli() {
         eprintln!("{}\n{}", "An error occured:".red(), e);
-        match &e {
-            Error::OpenConfig { path, .. } => eprintln!(
-                "Please run `rusteam config init` to get the default configuration at {}",
-                format!("{}", path.display()).green()
-            ),
-            _ => unimplemented!(),
-        }
+        print_suggestions(&e);
         if let Some(backtrace) = ErrorCompat::backtrace(&e) {
             println!("{}", backtrace);
         }
