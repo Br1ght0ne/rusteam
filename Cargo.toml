@@ -4,6 +4,9 @@ name = "rusteam"
 description = "Manage your games on the terminal"
 version = "0.3.0"
 edition = "2018"
+license = "GPL-3"
+homepage = "https://github.com/filalex77/rusteam"
+repository = "https://github.com/filalex77/rusteam"
 
 [dependencies]
 structopt = "0.2"
