@@ -25,23 +25,29 @@ pub enum Error {
         path: PathBuf,
         source: std::io::Error,
     },
+
     #[snafu(display("could not parse config at {}: {}", path.display(), source))]
     ParseConfig {
         path: PathBuf,
         source: toml::de::Error,
     },
+
     // TODO: what something?
     #[snafu(display("could not serialize something to TOML: {}", source))]
     TomlSerialization { source: toml::ser::Error },
+
     #[snafu(display("could not write config to {}: {}", path.display(), source))]
     WriteConfig {
         path: PathBuf,
         source: std::io::Error,
     },
+
+    #[snafu(display("could not write '{}' to stdout: {}", String::from_utf8_lossy(&data), source))]
     WriteStdout {
         data: Vec<u8>,
         source: std::io::Error,
     },
+
     #[snafu(display("no .config directory"))]
     NoConfigDir,
 }
@@ -160,6 +166,7 @@ fn cli() -> Result<()> {
 /// Prints game names to stdout. Formatting pending.
 fn print_games(games: &[Game]) {
     // TODO: fancy formatting of some sort
+    // TODO: maybe move it to Rusteam?
     for game in games.iter() {
         println!("{}", game);
     }
