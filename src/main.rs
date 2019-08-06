@@ -168,7 +168,7 @@ fn cli() -> Result<()> {
     match cli.cmd {
         cmd => {
             let config = Config::fetch().unwrap_or_default();
-            let games_root = &config.games_root.0;
+            let GamesRoot(games_root) = &config.games_root;
 
             match cmd {
                 Command::List { patterns } => {
