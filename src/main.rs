@@ -1,4 +1,4 @@
-extern crate dirs;
+extern crate directories;
 extern crate serde;
 extern crate snafu;
 extern crate structopt;
@@ -67,7 +67,9 @@ struct GamesRoot(PathBuf);
 
 impl Default for GamesRoot {
     fn default() -> Self {
-        let home_dir = dirs::home_dir().unwrap_or_else(|| PathBuf::from("/root"));
+        let home_dir = directories::BaseDirs::new()
+            .map(|base_dirs| base_dirs.home_dir().to_path_buf())
+            .unwrap_or_else(|| PathBuf::from("/root"));
         Self(home_dir.join("Games"))
     }
 }
@@ -107,12 +109,12 @@ mod cli {
 }
 
 impl Config {
-    const CONFIG_SUBDIR: &'static str = env!("CARGO_PKG_NAME");
     const CONFIG_FILENAME: &'static str = "config.toml";
 
     fn directory() -> Result<PathBuf> {
-        let config_home = dirs::config_dir().context(NoConfigDir)?;
-        Ok(config_home.join(Self::CONFIG_SUBDIR))
+        directories::ProjectDirs::from("space", "brightone", env!("CARGO_PKG_NAME"))
+            .map(|project_dirs| project_dirs.config_dir().to_path_buf())
+            .context(NoConfigDir)
     }
 
     fn path() -> Result<PathBuf> {

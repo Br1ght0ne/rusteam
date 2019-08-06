@@ -10,7 +10,7 @@ edition = "2018"
 
 [dependencies]
 colored = "1.8"
-dirs = "2.0"
+directories = "2.0.2"
 snafu = "0.4"
 structopt = "0.2"
 toml = "0.5"
