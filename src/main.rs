@@ -87,12 +87,12 @@ mod cli {
     pub enum Command {
         #[structopt(name = "ls", about = "List your games")]
         List {
-            #[structopt(help = "substrings of game name")]
+            #[structopt(help = "substrings of game name", required = true)]
             patterns: Vec<String>,
         },
         #[structopt(name = "play", about = "Run a game")]
         Play {
-            #[structopt(help = "substrings of game name")]
+            #[structopt(help = "substrings of game name", required = true)]
             patterns: Vec<String>,
         },
         #[structopt(name = "completion", about = "Install shell completion files")]
