@@ -2,19 +2,19 @@ use crate::filesystem::{entries, has_same_name_as_parent_dir};
 use std::fmt;
 use std::path::{Path, PathBuf};
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Platform {
     Native,
     Wine,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Genre {
     Action,
     Platformer,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Game {
     pub name: Option<String>,
     pub platform: Option<Platform>,

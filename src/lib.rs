@@ -50,13 +50,17 @@ pub fn play_game(root: &Path, pattern: String) {
 
 pub fn list_games(root: &Path, pattern: String) -> Vec<Game> {
     let iter = games_iter(root);
-    iter.filter(|game: &Game| {
-        game.name
-            .clone()
-            .map_or(false, |name| matches(&name, &pattern))
-        // REVIEW: is contains enough for now? Yes it is.
-    })
-    .collect::<Vec<Game>>()
+    let mut games = iter
+        .filter(|game: &Game| {
+            game.name
+                .clone()
+                .map_or(false, |name| matches(&name, &pattern))
+            // REVIEW: is contains enough for now? Yes it is.
+        })
+        .collect::<Vec<Game>>();
+    // REVIEW: best way to sort?
+    games.sort_unstable();
+    games
 }
 
 fn games_iter(root: &Path) -> impl Iterator<Item = Game> + '_ {
