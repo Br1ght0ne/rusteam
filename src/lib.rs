@@ -2,11 +2,36 @@ use crate::filesystem::entries;
 use crate::game::Game;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use structopt::{clap, StructOpt};
 
 pub mod filesystem;
 pub mod game;
 
 const IGNORE_FILENAME: &str = ".rusteam-ignore";
+
+// FIXME: DRY?
+#[derive(StructOpt)]
+pub enum Shell {
+    #[structopt(name = "bash", about = "Print bash completion")]
+    Bash,
+    #[structopt(name = "elvish", about = "Print elvish completion")]
+    Elvish,
+    #[structopt(name = "fish", about = "Print fish completion")]
+    Fish,
+    #[structopt(name = "zsh", about = "Print zsh completion")]
+    Zsh,
+}
+
+pub fn print_completion(app: &mut clap::App, shell: Shell) {
+    // FIXME: DRY?
+    let shell = match shell {
+        Shell::Bash => clap::Shell::Bash,
+        Shell::Elvish => clap::Shell::Elvish,
+        Shell::Fish => clap::Shell::Fish,
+        Shell::Zsh => clap::Shell::Zsh,
+    };
+    app.gen_completions_to(env!("CARGO_PKG_NAME"), shell, &mut std::io::stdout())
+}
 
 pub fn play_game(root: &Path, pattern: String) {
     if let Some(game) = list_games(root, pattern).first() {

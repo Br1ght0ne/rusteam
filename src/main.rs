@@ -95,6 +95,8 @@ mod cli {
             #[structopt(help = "substrings of game name")]
             patterns: Vec<String>,
         },
+        #[structopt(name = "completion", about = "Install shell completion files")]
+        Completion(rusteam::Shell),
         #[structopt(name = "config", about = "Manage your configuration")]
         Config(Config),
     }
@@ -174,6 +176,7 @@ fn cli() -> Result<()> {
                     print_games(&games);
                 }
                 Command::Play { patterns } => rusteam::play_game(&games_root, patterns.join(" ")),
+                Command::Completion(shell) => rusteam::print_completion(&mut CLI::clap(), shell),
                 Command::Config(config_action) => match config_action {
                     cli::Config::Init => Config::init()?,
                     cli::Config::Show => config.show()?,
