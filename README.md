@@ -15,6 +15,12 @@
   </a>
 </p>
 
+<p>
+  <a href="https://circleci.com/gh/filalex77/rusteam/tree/master">
+    <img alt="CircleCI" src="https://img.shields.io/circleci/build/gh/filalex77/rusteam?logo=circleci">
+  </a>
+</p>
+
 > Manage your games on the terminal
 
 `rusteam` is a little Rust CLI utility to help geeks like me manage their
