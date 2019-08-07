@@ -54,6 +54,9 @@ pub enum Error {
 
     #[snafu(display("no .config directory"))]
     NoConfigDir,
+
+    #[snafu(display("library error: {}", source))]
+    LibraryError { source: rusteam::Error },
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -75,6 +78,7 @@ impl Default for GamesRoot {
 }
 
 mod cli {
+    use std::path::PathBuf;
     use structopt::StructOpt;
 
     #[derive(StructOpt)]
@@ -98,6 +102,11 @@ mod cli {
         Play {
             #[structopt(help = "substrings of game name", required = true)]
             patterns: Vec<String>,
+        },
+        #[structopt(name = "install", about = "Install a game")]
+        Install {
+            #[structopt(help = "the path to game's files")]
+            path: PathBuf,
         },
         #[structopt(
             name = "completion",
@@ -180,10 +189,13 @@ fn cli() -> Result<()> {
 
             match cmd {
                 Command::List { patterns } => {
-                    let games = rusteam::list_games(&games_root, patterns.join(" "));
+                    let games = rusteam::list_games(&games_root, &patterns.join(" "));
                     print_games(&games);
                 }
-                Command::Play { patterns } => rusteam::play_game(&games_root, patterns.join(" ")),
+                Command::Play { patterns } => {
+                    rusteam::play_game(&games_root, patterns.join(" ")).context(LibraryError)?
+                }
+                Command::Install { path } => rusteam::install_game(&path).context(LibraryError)?,
                 Command::Completion(shell) => rusteam::print_completion(&mut CLI::clap(), shell),
                 Command::Config(config_action) => match config_action {
                     cli::Config::Init => Config::init()?,
