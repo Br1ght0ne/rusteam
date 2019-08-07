@@ -2,24 +2,33 @@ use crate::filesystem::{entries, has_same_name_as_parent_dir};
 use std::fmt;
 use std::path::{Path, PathBuf};
 
+/// A platform that a [`Game`] can be developed for.
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Platform {
     Native,
     Wine,
 }
 
+/// A genre that a [`Game`] can belong to.
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub enum Genre {
     Action,
     Platformer,
 }
 
+/// A game on your hard drive.
 #[derive(Debug, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Game {
+    /// Name of the game. Can be inferred from the directory.
     pub name: Option<String>,
+    /// Platform the game runs on: native (Linux), Wine, etc.
     pub platform: Option<Platform>,
+    /// Where the game is located:
+    /// the root directory that contains game files and launchers.
     pub directory: PathBuf,
+    /// Currently unused, but may be useful for filtering.
     pub genres: Vec<Genre>,
+    /// Paths to executable files that start the game.
     pub launchers: Vec<PathBuf>,
 }
 
@@ -33,6 +42,10 @@ impl fmt::Display for Game {
 }
 
 impl Game {
+    /// Constructs a [`Game`] from a [`PathBuf`].
+    ///
+    /// Most of the metadata about the game is inferred.
+    /// Currently there is no way to customize the inferred data.
     pub fn from_path(directory: PathBuf) -> Self {
         let (platform, launchers) = Self::find_launchers(&directory);
 
@@ -88,12 +101,6 @@ impl Game {
     }
 
     /// Checks if file is an uninstaller.
-    ///
-    /// ```
-    /// # use Game::is_uninstall;
-    /// # use std::path::Path;
-    /// assert!(is_uninstall(Path::new("game/uninstall-game.sh")))
-    /// ```
     fn is_uninstall(file: &Path) -> bool {
         file.file_name()
             .map(|f| f.to_string_lossy())
@@ -101,34 +108,16 @@ impl Game {
     }
 
     /// Checks if file is a native Linux executable (empirically).
-    ///
-    /// ```
-    /// # use Game::is_native;
-    /// # use std::path::Path;
-    /// assert!(is_native(Path::new("game/run.sh"))
-    /// ```
     fn is_native(file: &Path) -> bool {
         Self::extension_in(file, &["sh", "x86", "x86_64"])
     }
 
     /// Checks if file is a Wine executable (empirically).
-    ///
-    /// ```
-    /// # use Game::is_wine;
-    /// # use std::path::Path;
-    /// assert!(is_wine(Path::new("win_game/launcher.exe")))
-    /// ```
     fn is_wine(file: &Path) -> bool {
         Self::extension_in(file, &["exe"])
     }
 
     /// Checks if file has one of the extensions.
-    ///
-    /// ```
-    /// # use Game::extension_in;
-    /// # use std::path::Path;
-    /// assert!(extension_in(Path::new("/home/file.png"), &["jpg", "png"])
-    /// ```
     fn extension_in(file: &Path, extensions: &[&str]) -> bool {
         file.extension()
             .map(|ext| ext.to_string_lossy())
@@ -136,16 +125,43 @@ impl Game {
     }
 
     /// Gets the basename out of a path.
-    ///
-    /// ```
-    /// # use Game::basename;
-    /// # use std::path::Path;
-    /// assert_eq!(
-    ///     Some("file.png".to_string()),
-    ///     basename(Path::new("/home/file.png"))
-    /// )
-    /// ```
     fn basename(path: &Path) -> Option<String> {
         path.file_name().and_then(|f| f.to_str()).map(String::from)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_uninstall() {
+        assert!(Game::is_uninstall(Path::new("game/uninstall-game.sh")))
+    }
+
+    #[test]
+    fn test_is_native() {
+        assert!(Game::is_native(Path::new("game/run.sh")))
+    }
+
+    #[test]
+    fn test_is_wine() {
+        assert!(Game::is_wine(Path::new("win_game/launcher.exe")))
+    }
+
+    #[test]
+    fn test_extension_in() {
+        assert!(Game::extension_in(
+            Path::new("/home/file.png"),
+            &["jpg", "png"]
+        ))
+    }
+
+    #[test]
+    fn test_basename() {
+        assert_eq!(
+            Some("file.png".to_string()),
+            Game::basename(Path::new("/home/file.png"))
+        )
     }
 }
