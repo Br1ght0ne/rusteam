@@ -1,6 +1,6 @@
 [package]
 name = "rusteam"
-version = "0.4.6-alpha.0"
+version = "0.4.6-rc.1"
 description = "Manage your games on the terminal"
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 homepage = "https://github.com/filalex77/rusteam"
