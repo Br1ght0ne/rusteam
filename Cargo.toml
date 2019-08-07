@@ -1,6 +1,6 @@
 [package]
 name = "rusteam"
-version = "0.4.1"
+version = "0.4.2"
 description = "Manage your games on the terminal"
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 homepage = "https://github.com/filalex77/rusteam"
@@ -8,15 +8,19 @@ repository = "https://github.com/filalex77/rusteam"
 license = "GPL-3.0-or-later"
 edition = "2018"
 
+[badges]
+circle-ci = { repository = "filalex77/rusteam" }
+is-it-maintained-issue-resolution = { repository = "filalex77/rusteam" }
+is-it-maintained-open-issues = { repository = "filalex77/rusteam" }
+maintenance = {status = "actively-developed"}
+
 [dependencies]
 colored = "1.8"
 directories = "2.0.2"
+serde = { version = "1.0.98", features = ["derive"] }
 snafu = "0.4"
 structopt = "0.2"
 toml = "0.5"
 
-[dependencies.serde]
-version = "1.0"
-features = ["derive"]
 [dev-dependencies]
 version-sync = "0.8.1"

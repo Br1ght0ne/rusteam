@@ -1,3 +1,5 @@
+#![doc(html_root_url = "https://docs.rs/rusteam/0.4.2")]
+
 use crate::filesystem::entries;
 use crate::game::Game;
 use std::path::{Path, PathBuf};
