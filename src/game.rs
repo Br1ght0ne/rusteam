@@ -114,35 +114,3 @@ impl Game {
             .map(String::from)
     }
 }
-
-#[cfg(test)]
-mod test {
-    use super::{Game, PathBuf};
-
-    fn braid() -> Game {
-        Game::from_path(PathBuf::from("/home/brightone/Games/Braid"))
-    }
-
-    fn fake_game() -> Game {
-        Game::from_path(PathBuf::from("/tmp"))
-    }
-
-    fn multiple_launchers() -> Game {
-        Game::from_path(PathBuf::from("/home/brightone/Games/Happy Room"))
-    }
-
-    #[test]
-    fn test_launchers_contains() {
-        assert_eq!(braid().launchers.len(), 1)
-    }
-
-    #[test]
-    fn test_launchers_empty() {
-        assert!(fake_game().launchers.is_empty())
-    }
-
-    #[test]
-    fn test_launchers_multiple() {
-        assert_eq!(multiple_launchers().launchers.len(), 3)
-    }
-}
