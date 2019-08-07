@@ -87,30 +87,65 @@ impl Game {
                 || has_same_name_as_parent_dir(filepath))
     }
 
+    /// Checks if file is an uninstaller.
+    ///
+    /// ```
+    /// # use Game::is_uninstall;
+    /// # use std::path::Path;
+    /// assert!(is_uninstall(Path::new("game/uninstall-game.sh")))
+    /// ```
     fn is_uninstall(file: &Path) -> bool {
         file.file_name()
             .map(|f| f.to_string_lossy())
             .map_or(false, |f| f.contains("uninstall"))
     }
 
+    /// Checks if file is a native Linux executable (empirically).
+    ///
+    /// ```
+    /// # use Game::is_native;
+    /// # use std::path::Path;
+    /// assert!(is_native(Path::new("game/run.sh"))
+    /// ```
     fn is_native(file: &Path) -> bool {
         Self::extension_in(file, &["sh", "x86", "x86_64"])
     }
 
+    /// Checks if file is a Wine executable (empirically).
+    ///
+    /// ```
+    /// # use Game::is_wine;
+    /// # use std::path::Path;
+    /// assert!(is_wine(Path::new("win_game/launcher.exe")))
+    /// ```
     fn is_wine(file: &Path) -> bool {
         Self::extension_in(file, &["exe"])
     }
 
+    /// Checks if file has one of the extensions.
+    ///
+    /// ```
+    /// # use Game::extension_in;
+    /// # use std::path::Path;
+    /// assert!(extension_in(Path::new("/home/file.png"), &["jpg", "png"])
+    /// ```
     fn extension_in(file: &Path, extensions: &[&str]) -> bool {
         file.extension()
-            .map(|ext| ext.to_str().expect("failed to_str"))
-            .map_or(false, |ext| extensions.contains(&ext))
+            .map(|ext| ext.to_string_lossy())
+            .map_or(false, |ext| extensions.contains(&ext.as_ref()))
     }
 
-    fn basename(directory: &Path) -> Option<String> {
-        directory
-            .file_name()
-            .and_then(|f| f.to_str())
-            .map(String::from)
+    /// Gets the basename out of a path.
+    ///
+    /// ```
+    /// # use Game::basename;
+    /// # use std::path::Path;
+    /// assert_eq!(
+    ///     Some("file.png".to_string()),
+    ///     basename(Path::new("/home/file.png"))
+    /// )
+    /// ```
+    fn basename(path: &Path) -> Option<String> {
+        path.file_name().and_then(|f| f.to_str()).map(String::from)
     }
 }
