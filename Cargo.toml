@@ -14,8 +14,18 @@ edition = "2018"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "src/lib.rs"
-search = "{{prev_version}}"
-replace = "{{version}}"
+search = "\"https://docs.rs/rusteam/[^\"]\""
+replace = "\"https://docs.rs/rusteam/{{version}}\""
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.org"
+search = "Unreleased"
+replace = "v{{version}}"
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.org"
+search = "TBD"
+replace = "{{date}}"
 
 [badges]
 circle-ci = { repository = "filalex77/rusteam" }
