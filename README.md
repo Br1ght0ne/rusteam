@@ -61,7 +61,9 @@ rusteam play spire
 
 ## Configuration reference
 
-| `games_root` | Where all your games are located. Default: "~/Games" |
+| Field        | Description                                            |
+| ------------ | ------------------------------------------------------ |
+| `games_root` | Where all your games are located. Default: `"~/Games"` |
 
 ## Author
 
