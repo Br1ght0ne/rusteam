@@ -7,7 +7,7 @@ The format is based on [[https://keepachangelog.com/en/1.0.0/][Keep a Changelog]
 Versioning]].
 
 ** [v0.4.6-rc.2] - 2019-08-07
-*** Added
+*** Changed
 - Fix replacement in =src/lib.rs=
 
 ** [v0.4.6-rc.1] - 2019-08-07
