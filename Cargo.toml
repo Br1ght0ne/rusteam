@@ -14,8 +14,8 @@ edition = "2018"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "src/lib.rs"
-search = "\"https://docs.rs/rusteam/[^\"]\""
-replace = "\"https://docs.rs/rusteam/{{version}}\""
+search = "docs.rs/rusteam/[0-9]+\\.[0-9]+\\.[0-9]+"
+replace = "docs.rs/rusteam/{{version}}"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.org"

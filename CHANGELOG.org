@@ -6,6 +6,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [[https://keepachangelog.com/en/1.0.0/][Keep a Changelog]], and this project adheres to [[https://semver.org/spec/v2.0.0.html][Semantic
 Versioning]].
 
+** [Unreleased] - TBD
+*** Added
+- Fix replacement in =src/lib.rs=
+
 ** [v0.4.6-rc.1] - 2019-08-07
 *** Added
 - Add =CHANGELOG.org=
