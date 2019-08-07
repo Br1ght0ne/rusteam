@@ -85,17 +85,25 @@ mod cli {
 
     #[derive(StructOpt)]
     pub enum Command {
-        #[structopt(name = "ls", about = "List your games")]
+        #[structopt(name = "list", visible_alias = "ls", about = "List your games")]
         List {
-            #[structopt(help = "substrings of game name", required = true)]
+            #[structopt(help = "substrings of game name")]
             patterns: Vec<String>,
         },
-        #[structopt(name = "play", about = "Run a game")]
+        #[structopt(
+            name = "play",
+            raw(visible_aliases = r#"&["run", "launch"]"#),
+            about = "Run a game"
+        )]
         Play {
             #[structopt(help = "substrings of game name", required = true)]
             patterns: Vec<String>,
         },
-        #[structopt(name = "completion", about = "Install shell completion files")]
+        #[structopt(
+            name = "completion",
+            alias = "completions",
+            about = "Install shell completion files"
+        )]
         Completion(rusteam::Shell),
         #[structopt(name = "config", about = "Manage your configuration")]
         Config(Config),
