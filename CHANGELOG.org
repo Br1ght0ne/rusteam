@@ -1,0 +1,77 @@
+#+TITLE: CHANGELOG
+
+* Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [[https://keepachangelog.com/en/1.0.0/][Keep a Changelog]], and this project adheres to [[https://semver.org/spec/v2.0.0.html][Semantic
+Versioning]].
+
+** [Unreleased] - TBD
+*** Added
+- Add =CHANGELOG.org=
+- Add =cargo release= replacements for =CHANGELOG.org=
+
+** [v0.4.5] - 2019-08-07
+*** Added
+- Integrate =cargo release= in the development process
+  - Add a version prefix =v= to Git tag names
+- Add CircleCI badge to README.md
+*** Changed
+- Reformat README.md
+
+** [0.4.4] - 2019-08-07
+*** Added
+- Add more metadata to =Cargo.toml=
+ 
+** [0.4.3] - 2019-08-07
+*** Added
+- Write some more documentation
+- Add =README.md=
+
+** [0.4.2] - 2019-08-07
+*** Added
+- Add some badges via =Cargo.toml=
+- Integrate =version-sync= in the development process
+- Add configuration for CircleCI
+
+** [0.4.1] - 2019-08-07
+*** Added
+- Add command aliases
+*** Changed
+- Make =ls= pattern arguments optional (revert change from 0.4.0)
+
+** [0.4.0] - 2019-08-06
+*** Added
+- Add completion subcommand
+*** Changed
+- Remove =Rusteam= struct
+  Makes the project structure more flat.
+- Use =directories= instead of =dirs=
+- Sort games when listing
+- Make patterns for =ls=/=play= required arguments
+
+** [0.3.1] - 2019-07-31
+*** Added
+- Prepare for publishing on =crates.io=
+*** Changed
+- Fix =license= in =Cargo.toml=
+
+** [0.3.0] - 2019-07-31
+*** Changed
+- Consider consecutive =patterns= arguments as the same pattern
+- Code refactoring
+  - Separate ~Config::init()~ from ~config.write()~
+  - Extract suggestions to a separate function
+  - Improve formatting, some =TODO=
+
+** [0.2.0] - 2019-07-30
+*** Added
+- Implement configuration subcommands
+  - =config init=
+  - =config show=
+*** Changed
+- Implement error handling
+
+** [0.1.0] - 2019-07-30
+*** Added
+- Initial release
