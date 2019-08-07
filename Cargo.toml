@@ -1,10 +1,14 @@
 [package]
 name = "rusteam"
-version = "0.4.3"
+version = "0.4.4"
 description = "Manage your games on the terminal"
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 homepage = "https://github.com/filalex77/rusteam"
+documentation = "https://docs.rs/rusteam"
 repository = "https://github.com/filalex77/rusteam"
+readme = "README.md"
+keywords = ["cli", "games", "gaming", "steam", "library"]
+categories = ["command-line-utilities", "games"]
 license = "GPL-3.0-or-later"
 edition = "2018"
 
