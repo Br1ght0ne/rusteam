@@ -1,6 +1,6 @@
 [package]
 name = "rusteam"
-version = "0.4.4"
+version = "0.4.5"
 description = "Manage your games on the terminal"
 authors = ["Oleksii Filonenko <brightone@protonmail.com>"]
 homepage = "https://github.com/filalex77/rusteam"
@@ -28,3 +28,8 @@ toml = "0.5"
 
 [dev-dependencies]
 version-sync = "0.8.1"
+
+[[package.metadata.release.pre-release-replacements]]
+file = "src/lib.rs"
+search = "{{prev_version}}"
+replace = "{{version}}"
