@@ -1,10 +1,17 @@
-<h1 align="center">rusteam</h1>
+# rusteam
+
 <p>
-  <img alt="Version" src="https://img.shields.io/crates/v/rusteam" />
-  <img alt="Downloads" src="https://img.shields.io/crates/d/rusteam" />
-  <img alt="License" src="https://img.shields.io/github/license/filalex77/rusteam" />
+  <a href="https://crates.io/crates/rusteam">
+    <img alt="Version" src="https://img.shields.io/crates/v/rusteam" />
+  </a>
+  <a href="https://crates.io/crates/rusteam">
+    <img alt="Downloads" src="https://img.shields.io/crates/d/rusteam" />
+  </a>
+  <a href="https://github.com/filalex77/rusteam/blob/master/LICENSE">
+    <img alt="License" src="https://img.shields.io/github/license/filalex77/rusteam?color=brightgreen&logo=gnu" />
+  </a>
   <a href="https://docs.rs/rusteam">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" target="_blank" />
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-docs.rs-brightgreen.svg?logo=markdown" target="_blank" />
   </a>
 </p>
 
