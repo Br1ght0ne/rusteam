@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [[https://keepachangelog.com/en/1.0.0/][Keep a Changelog]], and this project adheres to [[https://semver.org/spec/v2.0.0.html][Semantic
 Versioning]].
 
-** [Unreleased] - TBD
+** [v0.5.0] - 2019-08-12
 *** Added
 - Implement game installation
   - Add =rusteam install= subcommand
