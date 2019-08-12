@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/rusteam/0.5.0-rc.2")]
+#![doc(html_root_url = "https://docs.rs/rusteam/0.5.0")]
 
 use crate::filesystem::entries;
 use crate::game::Game;

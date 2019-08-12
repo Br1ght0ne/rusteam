@@ -14,7 +14,7 @@ edition = "2018"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "src/lib.rs"
-search = "docs.rs/rusteam/[0-9]+\\.[0-9]+\\.[0-9]+"
+search = "docs.rs/rusteam/[^\"]+"
 replace = "docs.rs/rusteam/{{version}}"
 
 [[package.metadata.release.pre-release-replacements]]
