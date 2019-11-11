@@ -113,6 +113,7 @@ fn is_installer(filepath: &Path) -> bool {
 fn games_iter(root: &Path) -> impl Iterator<Item = Game> + '_ {
     entries(root)
         .into_iter()
+        .filter(|e| e.is_dir())
         .filter(move |e| !ignore(&root.join(e)))
         .map(move |e| Game::from_path(root.join(e)))
 }
