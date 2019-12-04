@@ -34,12 +34,12 @@ is-it-maintained-open-issues = { repository = "filalex77/rusteam" }
 maintenance = {status = "actively-developed"}
 
 [dependencies]
-colored = "1.8"
+colored = "1.9.0"
 directories = "2.0.2"
-serde = { version = "1.0.98", features = ["derive"] }
-snafu = "0.4"
-structopt = "0.2"
-toml = "0.5"
+serde = { version = "1.0.103", features = ["derive"] }
+snafu = "0.6.0"
+structopt = "0.3.5"
+toml = "0.5.5"
 
 [dev-dependencies]
 version-sync = "0.8.1"

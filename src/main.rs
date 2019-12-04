@@ -96,7 +96,7 @@ mod cli {
         },
         #[structopt(
             name = "play",
-            raw(visible_aliases = r#"&["run", "launch"]"#),
+            visible_aliases = &["run", "launch"],
             about = "Run a game"
         )]
         Play {
