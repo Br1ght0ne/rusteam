@@ -1,8 +1,5 @@
 #![doc(html_root_url = "https://docs.rs/rusteam/0.5.2")]
 
-use crate::filesystem::entries;
-use crate::game::Game;
-use snafu::{OptionExt, ResultExt, Snafu};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use structopt::{clap, StructOpt};
@@ -10,18 +7,21 @@ use structopt::{clap, StructOpt};
 pub mod filesystem;
 pub mod game;
 
+use filesystem::entries;
+use game::Game;
+
 const IGNORE_FILENAME: &str = ".rusteam-ignore";
 
-#[derive(Debug, Snafu)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[snafu(display("failed to run command {:?}: {}", command, source))]
+    #[error("failed to run command {command}: {source}")]
     CommandSpawnFailed {
         command: String,
         source: std::io::Error,
     },
-    #[snafu(display("no game found for pattern {}", pattern))]
+    #[error("no game found for pattern {pattern}")]
     GameNotFound { pattern: String },
-    #[snafu(display("no launcher found for game {}", game))]
+    #[error("no launcher found for game {game}")]
     LauncherNotFound { game: String },
 }
 
@@ -53,9 +53,9 @@ pub fn print_completion(app: &mut clap::App, shell: Shell) {
 
 pub fn play_game(root: &Path, pattern: String) -> Result<()> {
     let games = list_games(root, &pattern);
-    let game = games.first().context(GameNotFound { pattern })?;
-    let launcher = game.launchers.first().context(LauncherNotFound {
-        game: format!("{}", game),
+    let game = games.first().ok_or(Error::GameNotFound { pattern })?;
+    let launcher = game.launchers.first().ok_or(Error::LauncherNotFound {
+        game: game.to_string(),
     })?;
     spawn(&mut Command::new(dbg!(launcher)))
 }
@@ -96,8 +96,9 @@ fn spawn(command: &mut Command) -> Result<()> {
     command
         .spawn()
         .and_then(|mut child| child.wait().map(|_| ()))
-        .context(CommandSpawnFailed {
+        .map_err(|source| Error::CommandSpawnFailed {
             command: format!("{:?}", command),
+            source,
         })
 }
 

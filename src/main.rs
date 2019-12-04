@@ -1,62 +1,33 @@
-extern crate directories;
-extern crate serde;
-extern crate snafu;
-extern crate structopt;
-
-use colored::*;
+use anyhow::{Context, Result};
+use rusteam::game::Game;
 use serde::{Deserialize, Serialize};
-use snafu::ResultExt;
-use snafu::{ErrorCompat, OptionExt, Snafu};
 use std::fs;
 use std::io::Write;
 use std::path::PathBuf;
 use structopt::StructOpt;
 
-use rusteam::game::Game;
-
-type Result<T, E = Error> = std::result::Result<T, E>;
-
-#[derive(Debug, Snafu)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
-    #[snafu(display("could not open config at {}: {}", path.display(), source))]
-    OpenConfig {
-        path: PathBuf,
-        source: std::io::Error,
-    },
+    #[error("could not open config: {0}")]
+    OpenConfig(#[source] std::io::Error),
 
-    #[snafu(display("could not parse config at {}: {}", path.display(), source))]
-    ParseConfig {
-        path: PathBuf,
-        source: toml::de::Error,
-    },
+    #[error("could not parse config: {0}")]
+    ParseConfig(#[source] toml::de::Error),
 
-    // TODO: what something?
-    #[snafu(display("could not serialize something to TOML: {}", source))]
-    TomlSerialization { source: toml::ser::Error },
+    #[error("could not serialize config: {0}")]
+    SerializeConfig(#[from] toml::ser::Error),
 
-    #[snafu(display("failed to create config directory at {}: {}", path.display(), source))]
-    CreateConfigDir {
-        path: PathBuf,
-        source: std::io::Error,
-    },
+    #[error("failed to create config directory: {0}")]
+    CreateConfigDir(#[source] std::io::Error),
 
-    #[snafu(display("could not write config to {}: {}", path.display(), source))]
-    WriteConfig {
-        path: PathBuf,
-        source: std::io::Error,
-    },
+    #[error("could not write config: {0}")]
+    WriteConfig(#[source] std::io::Error),
 
-    #[snafu(display("could not write '{}' to stdout: {}", String::from_utf8_lossy(&data), source))]
-    WriteStdout {
-        data: Vec<u8>,
-        source: std::io::Error,
-    },
+    #[error("could not write to stdout: {0}")]
+    WriteStdout(#[source] std::io::Error),
 
-    #[snafu(display("no .config directory"))]
-    NoConfigDir,
-
-    #[snafu(display("library error: {}", source))]
-    LibraryError { source: rusteam::Error },
+    #[error(transparent)]
+    LibraryError(#[from] rusteam::Error),
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -108,11 +79,7 @@ mod cli {
             #[structopt(help = "the path to game files")]
             path: PathBuf,
         },
-        #[structopt(
-            name = "completion",
-            alias = "completions",
-            about = "Install shell completion files"
-        )]
+        #[structopt(name = "completions", about = "Install shell completion files")]
         Completion(rusteam::Shell),
         #[structopt(name = "config", about = "Manage your configuration")]
         Config(Config),
@@ -133,7 +100,7 @@ impl Config {
     fn directory() -> Result<PathBuf> {
         directories::ProjectDirs::from("space", "brightone", env!("CARGO_PKG_NAME"))
             .map(|project_dirs| project_dirs.config_dir().to_path_buf())
-            .context(NoConfigDir)
+            .context("no .config directory")
     }
 
     fn path() -> Result<PathBuf> {
@@ -142,17 +109,17 @@ impl Config {
 
     fn fetch() -> Result<Self> {
         let path = Self::path()?;
-        let file = &fs::read(&path).context(OpenConfig { path: path.clone() })?;
+        let file = &fs::read(&path).map_err(Error::OpenConfig)?;
         let config = String::from_utf8_lossy(file);
-        let toml = toml::from_str(&config).context(ParseConfig { path: path.clone() })?;
+        let toml = toml::from_str(&config).map_err(Error::ParseConfig)?;
         Ok(toml)
     }
 
     fn show(&self) -> Result<()> {
-        let toml = toml::to_vec(&self).context(TomlSerialization)?;
+        let toml = toml::to_vec(&self).context("could not serialize {self:?} to TOML")?;
         std::io::stdout()
             .write_all(&toml)
-            .context(WriteStdout { data: toml })?;
+            .map_err(Error::WriteStdout)?;
         Ok(())
     }
 
@@ -165,48 +132,19 @@ impl Config {
     /// **Does** create `~/.config` if needed.
     fn ensure_directory() -> Result<()> {
         let path = Self::directory()?;
-        fs::create_dir_all(&path).context(CreateConfigDir { path })?;
+        fs::create_dir_all(&path).map_err(Error::CreateConfigDir)?;
         Ok(())
     }
 
     fn write(&self) -> Result<()> {
-        let toml = toml::to_string_pretty(&self).context(TomlSerialization)?;
+        let toml = toml::to_string_pretty(&self).map_err(Error::SerializeConfig)?;
         let path = Self::path()?;
-        fs::write(&path, &toml).context(WriteConfig { path })?;
+        fs::write(&path, &toml).map_err(Error::WriteConfig)?;
         Ok(())
     }
 }
 
 use cli::{Command, CLI};
-
-fn cli() -> Result<()> {
-    let cli = CLI::from_args();
-
-    match cli.cmd {
-        cmd => {
-            let config = Config::fetch().unwrap_or_default();
-            let GamesRoot(games_root) = &config.games_root;
-
-            match cmd {
-                Command::List { patterns } => {
-                    let games = rusteam::list_games(&games_root, &patterns.join(" "));
-                    print_games(&games);
-                }
-                Command::Play { patterns } => {
-                    rusteam::play_game(&games_root, patterns.join(" ")).context(LibraryError)?
-                }
-                Command::Install { path } => rusteam::install_game(&path).context(LibraryError)?,
-                Command::Completion(shell) => rusteam::print_completion(&mut CLI::clap(), shell),
-                Command::Config(config_action) => match config_action {
-                    cli::Config::Init => Config::init()?,
-                    cli::Config::Show => config.show()?,
-                },
-            }
-        }
-    }
-
-    Ok(())
-}
 
 /// Prints game names to stdout. Formatting pending.
 fn print_games(games: &[Game]) {
@@ -217,22 +155,28 @@ fn print_games(games: &[Game]) {
     }
 }
 
-/// Prints possible suggestions for common errors.
-fn print_suggestions(error: &Error) {
-    if let Error::OpenConfig { path, .. } = error {
-        eprintln!(
-            "Please run `rusteam config init` to get the default configuration at {}",
-            format!("{}", path.display()).green()
-        );
-    }
-}
+#[paw::main]
+fn main(args: CLI) -> Result<()> {
+    match args.cmd {
+        cmd => {
+            let config = Config::fetch().unwrap_or_default();
+            let GamesRoot(games_root) = &config.games_root;
 
-fn main() {
-    if let Err(e) = cli() {
-        eprintln!("{}\n{}", "An error occured:".red(), e);
-        print_suggestions(&e);
-        if let Some(backtrace) = ErrorCompat::backtrace(&e) {
-            println!("{}", backtrace);
+            match cmd {
+                Command::List { patterns } => {
+                    let games = rusteam::list_games(&games_root, &patterns.join(" "));
+                    print_games(&games);
+                }
+                Command::Play { patterns } => rusteam::play_game(&games_root, patterns.join(" "))?,
+                Command::Install { path } => rusteam::install_game(&path)?,
+                Command::Completion(shell) => rusteam::print_completion(&mut CLI::clap(), shell),
+                Command::Config(config_action) => match config_action {
+                    cli::Config::Init => Config::init()?,
+                    cli::Config::Show => config.show()?,
+                },
+            }
         }
     }
+
+    Ok(())
 }
