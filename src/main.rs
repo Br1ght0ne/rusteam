@@ -105,7 +105,7 @@ mod cli {
         },
         #[structopt(name = "install", about = "Install a game")]
         Install {
-            #[structopt(help = "the path to game's files")]
+            #[structopt(help = "the path to game files")]
             path: PathBuf,
         },
         #[structopt(
