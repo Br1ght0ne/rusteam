@@ -1,0 +1,25 @@
+name: Rust
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install clippy
+      run: rustup component add clippy 
+    - name: Build
+      uses: actions-rs/cargo@v1.0.1
+      with:
+        command: build
+    - name: Run clippy
+      uses: actions-rs/clippy-check@v1.0.5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Run tests
+      uses: actions-rs/cargo@v1.0.1
+      with:
+        command: test
