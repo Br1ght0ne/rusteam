@@ -1,0 +1,15 @@
+version = 1
+
+[merge]
+method = "squash"
+delete_branch_on_merge = true
+require_automerge_label = false
+
+[merge.message]
+title = "pull_request_title"
+body = "pull_request_body"
+
+[update]
+always = true
+require_automerge_label = false
+blacklist_usernames = ["dependabot-preview"]
