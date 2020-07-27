@@ -34,7 +34,7 @@ is-it-maintained-open-issues = { repository = "filalex77/rusteam" }
 maintenance = {status = "actively-developed"}
 
 [dependencies]
-anyhow = "1.0.31"
+anyhow = "1.0.32"
 directories = "3.0.1"
 paw = "1.0.0"
 serde = { version = "1.0.114", features = ["derive"] }
