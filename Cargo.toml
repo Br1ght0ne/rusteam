@@ -38,7 +38,7 @@ anyhow = "1.0.32"
 directories = "3.0.1"
 paw = "1.0.0"
 serde = { version = "1.0.116", features = ["derive"] }
-structopt = { version = "0.3.17", features = ["paw"] }
+structopt = { version = "0.3.18", features = ["paw"] }
 thiserror = "1.0.20"
 toml = "0.5.6"
 
