@@ -39,7 +39,7 @@ directories = "3.0.2"
 paw = "1.0.0"
 serde = { version = "1.0.126", features = ["derive"] }
 structopt = { version = "0.3.21", features = ["paw"] }
-thiserror = "1.0.24"
+thiserror = "1.0.25"
 toml = "0.5.8"
 
 [dev-dependencies]
