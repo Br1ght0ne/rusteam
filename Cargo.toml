@@ -37,7 +37,7 @@ maintenance = {status = "actively-developed"}
 anyhow = "1.0.42"
 directories = "3.0.2"
 paw = "1.0.0"
-serde = { version = "1.0.126", features = ["derive"] }
+serde = { version = "1.0.127", features = ["derive"] }
 structopt = { version = "0.3.22", features = ["paw"] }
 thiserror = "1.0.26"
 toml = "0.5.8"
